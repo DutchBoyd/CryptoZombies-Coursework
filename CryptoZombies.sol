@@ -36,10 +36,17 @@ pragma solidity ^0.4.19; // Entering Solidity Version
 
 // Lesson 1.13, Covers "events" in solidity, which is a way for our contract to communicate that something happened on the blockchain to a dApp front-end, which can be 'listening' for certain events and take action when they happen. Events are declared
 // similar to how a data type is declared. E.g. "event IntegersAdded(uint x, uint y, uint result);" Gives an example of an "add" function you might build in solidity which would then call that event, and then in your front-end Javascript, you
-// might have a 'listener' which would do something when the event is broadcast. So something like "YourContract.IngegersAdded(function(error,result) { // do something with result }
+// might have a 'listener' which would do something when the event is broadcast. So something like "YourContract.IngegersAdded(function(error,result) { // do something with result }. Also, interesting note that when you use the 
+// .push method, it will return a uint of the new length of the array. We are using this return value as our zombieId variable. One thing I don't really like about this lesson is how much heavy lifting is done int hat first line in the _createZombie
+// contract. I think it's going to be confusing for novice coders. Assigning the id in the same line the push array operation is a little complicated. But whatevs... I did it the first try, so maybe I'm not giving enough credit to
+// solidity students.
+
+// Lesson 1.14, Doesn't have much here... just introduces the student to the Web3.js Ethereum Javascript library that we'll be using for our front end. I'm just copying and pasting the code into another file for my github repo. 
 
 
 contract CryptoZombies { //Naming the contract 
+
+	event NewZombie(uint zombieId, string name, uint dna);
 
 	uint dnaDigits = 16;  // Zombie DNA is a 16-digit number
 	uint dnaModulus = 10 ** dnaDigits;  // dnaModulus is going to make sure our Zombie DNA is only 16 digits long in Base-10
@@ -52,7 +59,8 @@ contract CryptoZombies { //Naming the contract
 	Zombie[] public zombies;  // Creating a public array, which in this case "public" just means solidity creates a getter for it, not that it can be accessed outside of the contract
 
 	function _createZombie(string _name, uint _dna) private {  // Creating a function to create a new zombie, which pushes the instance of the Zombie struct/object into the zombies[] array.
-        zombies.push(Zombie(_name, _dna));
+        uint id = zombies.push(Zombie(_name, _dna)) - 1;
+        NewZombie(id, _name, _dna);
 	}
 
 	function _generateRandomDna(string _str) private view returns (uint) {  // Creating a function to generate the Zombie dna integer.
